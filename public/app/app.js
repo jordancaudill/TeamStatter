@@ -102,7 +102,7 @@
                 //runs once a response has been received for every matchDetails request
                 myPromise.then(function(response){
                     //if getting the matches is successful
-                    if (response[response.length - 1].matchType) {
+                    if (response.length && response[response.length - 1].matchType) {
                         shareData.setTeam(selectedTeam);
                         shareData.setMatches(response);
                         shareData.setOpposingTeamNames(opposingTeamNames);
@@ -110,7 +110,7 @@
                     }
                     //currently have it set so that it will display error if a single match request is unsuccessful
                     else{
-                        $scope.error = response[response.length - 1].data;
+                        $scope.error = 'Could not find matches.'
                     }
                 }.bind(this));
 
@@ -264,30 +264,32 @@
             });
 
             angular.forEach(matches, function(match){
-                //variable to hold the total for a single match, which will then be pushed to team.stats[statName].perMatch
-                var statTotal = 0;
+                if (typeof(match) !== 'string') {
+                    //variable to hold the total for a single match, which will then be pushed to team.stats[statName].perMatch
+                    var statTotal = 0;
 
-                angular.forEach(team.members, function(member){
+                    angular.forEach(team.members, function(member){
 
-                    var foundMember = false;
+                        var foundMember = false;
 
-                    for(var k = 0; k < match.participantIdentities.length; k ++){
-                        var participantIdentity = match.participantIdentities[k];
-                        var participant = match.participants[k];
-                        if (participantIdentity.player.summonerId == member.summonerId) {
-                            member.stats[statName].perMatch.push(participant.stats[statName]);
-                            foundMember = true;
-                            statTotal += participant.stats[statName];
+                        for(var k = 0; k < match.participantIdentities.length; k ++){
+                            var participantIdentity = match.participantIdentities[k];
+                            var participant = match.participants[k];
+                            if (participantIdentity.player.summonerId == member.summonerId) {
+                                member.stats[statName].perMatch.push(participant.stats[statName]);
+                                foundMember = true;
+                                statTotal += participant.stats[statName];
+                            }
                         }
-                    }
-                    if (foundMember == false){
-                        member.stats[statName].perMatch.push(null);
-                    }
+                        if (foundMember == false){
+                            member.stats[statName].perMatch.push(null);
+                        }
 
-                    //get the average for the stat from all games
-                    member.stats[statName]['average'] = getAverage(member.stats[statName].perMatch);
-                });
-                team.stats[statName].perMatch.push(statTotal);
+                        //get the average for the stat from all games
+                        member.stats[statName]['average'] = getAverage(member.stats[statName].perMatch);
+                    });
+                    team.stats[statName].perMatch.push(statTotal);   
+                }                    
 
             });
 
@@ -602,8 +604,10 @@
             team.stats['matchDurations'] = [];
             team.stats['victories'] = [];
             angular.forEach(matches, function(match){
-                team.stats.victories.push(getVictory(match, team));
-                team.stats.matchDurations.push(match.matchDuration / 60);
+                if (typeof match !== 'string') {
+                    team.stats.victories.push(getVictory(match, team));
+                    team.stats.matchDurations.push(match.matchDuration / 60);
+                }
             });
 
 

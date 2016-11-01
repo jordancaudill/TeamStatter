@@ -83,7 +83,6 @@ app.get('/match/:region/:matchId', function (req, res){
 
 
     request('https://'+region+'.api.pvp.net/api/lol/'+region+'/v2.2/match/'+matchId+apiKey, function (error, response, body) {
-
         if (!error && response.statusCode == 200) {
             console.log('match request successful');
             res.send(body);
@@ -96,8 +95,9 @@ app.get('/match/:region/:matchId', function (req, res){
             res.send('Could not find games');
         }
         else if(response.statusCode == 429){
+            console.log(response.data);
             console.log('rate limit exceeded');
-            res.send('Team Statter is receiving a lot of requests right now. Please try again in 10 seconds.');
+            res.send({});
         }
         else if(response.statusCode == 503){
             console.log('API Offline');

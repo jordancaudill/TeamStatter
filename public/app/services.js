@@ -94,18 +94,21 @@
                     });
 
                     $q.all(promises).then(function(response){
+                        var ressend = [];
                         if (response[response.length - 1].data.matchType) {
                             for (i = 0; i < response.length; i++){
-                                response[i] = response[i]['data'];
+                                if (response[i].data) {
+                                    ressend.push(response[i]['data']);
+                                }
                             }
                             var matchStorage = {};
                             matchStorage.storageTime = new Date().getTime();
-                            matchStorage.matches = response;
+                            matchStorage.matches = ressend;
                             matchStorage = JSON.stringify(matchStorage);
                             localStorage.setItem(teamName, matchStorage);
-                        }
+                        } else {}
 
-                        return def.resolve(response);
+                        return def.resolve(ressend);
                     });
                 }
 
@@ -116,7 +119,7 @@
 
     //for sharing data between controllers
     app.service('shareData', function() {
-        this.DESIRED_GAMES = 10;
+        this.DESIRED_GAMES = 5;
 
         this.getDesiredGames = function(){
             return this.DESIRED_GAMES;
