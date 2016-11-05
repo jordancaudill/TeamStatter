@@ -20,6 +20,7 @@
         }]);
 
     app.controller('SearchController', ['$q', '$scope', 'getSummoner', 'getTeams', 'shareData', 'getMatchDetails', '$location', '$timeout', function($q, $scope,  getSummoner, getTeams, shareData, getMatchDetails, $location){
+        $scope.error = 'Note: Changes to the Riot Games API may cause some issues with older teams.';
         this.regions = [
             'NA',
             'EUW',
